@@ -1,0 +1,57 @@
+<html>
+{{message}}
+<body>
+	<h1>Organization: {{org[1]}}</h1>
+	<h3>username: {{org[2]}}</h3>
+	
+	<h2>Students</h2>
+	<table>
+	<tr><th>First name</th> <th>Last name</th> <th>Email</th></tr>
+	{% for student in students %}
+		<tr>
+		<td>{{student["Firstname"]}}</td>
+		<td>{{student["Lastname"]}}</td>
+		<td>{{student["Email"]}}</td>
+		</tr>
+	{% endfor %}
+	</table>
+	
+	<h4>Add more students </h4>
+	<h4>
+	(upload a csv or excel sheet)<br>
+	 ensure that the sheet contains the header Firstname,Lastname,Email
+	</h4>
+	<form action = "/forms/upload_students" method=post enctype=multipart/form-data>
+		<input type = "hidden" name = "org_id" value = "{{org[0]}}" />
+		<input type=file name=file>
+		<input type=submit value=Upload>
+	</form>
+	
+	<br>
+	
+	<h2>Staff</h2>
+	<table>
+	<tr><th>First name</th> <th>Last name</th> <th>Email</th></tr>
+	{% for student in staff %}
+		<tr>
+		<td>{{student["Firstname"]}}</td>
+		<td>{{student["Lastname"]}}</td>
+		<td>{{student["Email"]}}</td>
+		</tr>
+	{% endfor %}
+	</table>
+	
+	<h4>Add more teaching staff </h4>
+	<h4>
+	(upload a csv or excel sheet)<br>
+	 ensure that the sheet contains the header Firstname,Lastname,Email
+	</h4>
+	<form action = "/forms/upload_staff" method=post enctype=multipart/form-data>
+		<input type = "hidden" name = "org_id" value = "{{org[0]}}" />
+		<input type=file name=file>
+		<input type=submit value=Upload>
+	</form>
+
+	
+</body>
+</html>

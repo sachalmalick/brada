@@ -1,0 +1,38 @@
+<html>
+<body>
+	{{message}}
+	<h1>Welcome Admin</h1>
+	<h2>{{email}}</h2>
+	Organizations
+	<br>
+	<table>
+	<tr>
+		<th>Organization name</th>
+		<th>Organization username</th>
+	</tr>
+	{% for org in orgs %}
+		<tr>
+			
+		<td>
+    	<a href = '../../organization?id={{org[0]}}'>{{org[1]}}</a>
+		</td>
+			
+		<td>
+		{{org[2]}}
+		</td>
+		
+		</tr>
+	{% endfor %}
+	</table>
+	
+	<br>
+	{{createresponse}}
+	Create a new organization:
+	<form action = "/forms/admin/new_organization" method="post">
+		Organization name: <input type = "text" name = "orgname"/>
+		Organization username: <input type = "text" name = "username"/>
+		<input type = "submit" value="Create" />
+	</form>
+	
+</body>
+</html>

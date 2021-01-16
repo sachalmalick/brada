@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Admin</title>
+		  <link href="{{ url_for('static', filename='dist/css/styles.css') }}" rel="stylesheet">
+
+        <link href="css/styles.css" rel="stylesheet" />
+        <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <a class="navbar-brand" href="index.html">Welcome Admin</a>
+            <!-- Navbar Search-->
+            <div class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+                <a href = "">Logout</a>
+            </div>
+            <!-- Navbar-->
+        </nav>
+		
+		<script
+src="https://code.jquery.com/jquery-3.5.1.min.js"
+integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+crossorigin="anonymous">
+</script>
+	
+<script>
+	
+	var room = "NONE";
+	var room_tit = "";
+	
+	function load_messages(){
+		if(room != "NONE") {
+			open_room(room, room_tit);
+		}
+    	setTimeout(load_messages, 500);
+	}
+	
+	load_messages();
+	  
+	function sendMessage(room_id) {
+		var msg = document.getElementById("sendtext").value;
+		$.post("/api/send_message",
+		  {
+			room_id : room_id,
+			msg:msg
+		  },
+		function(data, status){
+			console.log(status);
+		});
+	} 
+	
+	function send_msg_button(room_id) {
+		var onclick = 'sendMessage("' + room_id + '")';
+		var str = "<button onclick = '" + onclick + "'>Send Message</button>";
+		console.log(str);
+		return str;
+	}
+	
+	function open_room(room_id, room_title) {
+		room = room_id;
+		room_tit = room_title;
+		document.getElementById("convesationname").innerHTML = room_title;
+		console.log(room);
+		console.log(room_tit);
+		document.getElementById("convesationname") == room_title;
+		document.getElementById("sendmessagebutton").innerHTML = send_msg_button(room_id);
+		$.post("/api/get_messages",
+		  {
+			room_id : room_id,
+		  },
+		function(data, status){
+			console.log(status);
+			console.log(data);
+			var obj = JSON.parse(data);
+			var htmlstr = "<table>";
+			for(var i = 0; i < obj.length; i++) {
+				htmlstr = htmlstr + "<tr>";
+				var msg = obj[i];
+				htmlstr =htmlstr + "<td>" + msg["from"] + "</td>";
+				htmlstr =htmlstr + "<td>" + msg["text"] + "</td>";
+				htmlstr = htmlstr + "</tr>";
+				
+			}
+			htmlstr = htmlstr + "</table>";
+			console.log(htmlstr);
+			document.getElementById("viewmessages").innerHTML = htmlstr;
+		});
+	}
+	
+	function open_wrapper(room_id, title) {
+		open_room(room_id, title);
+		window.location.href = "#convotop";
+	}
+</script>										<a id="convotop"></a>
+
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid">
+						<br>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item active">Admin</li>
+                        </ol>
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-area mr-1"></i>
+                                        <div id = "convesationname">Conversation</div>
+                                    </div>
+                                    <div class="card-body">
+										<div id = "viewmessages">
+										</div>
+										Message: <input type = "text" id = "sendtext"/><br>
+										<div id = "sendmessagebutton">
+										</div>
+									</div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-bar mr-1"></i>
+                                        Console
+                                    </div>
+                                    <div class="card-body">{{message}}{{createresponse}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table mr-1"></i>
+                                Organizations
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>Conversation</th>
+                                            </tr>
+                                        </thead>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Conversation</th>
+                                            </tr>
+                                        </tfoot>
+                                        <tbody>
+                                            {% for room in rooms %}
+											<tr>
+
+											<td>
+											<button onclick = "open_wrapper('{{room[0]}}', '{{room[1]}}')">{{room[1]}}</button>
+											</td>
+
+											</tr>
+										{% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+		</div>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Sachal Malick 2020</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="js/scripts.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script src="assets/demo/chart-area-demo.js"></script>
+        <script src="assets/demo/chart-bar-demo.js"></script>
+        <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+        <script src="assets/demo/datatables-demo.js"></script>
+    </body>
+</html>
