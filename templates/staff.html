@@ -6,45 +6,223 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Admin</title>
+        <title>Staff</title>
 		  <link href="{{ url_for('static', filename='dist/css/styles.css') }}" rel="stylesheet">
 
         <link href="css/styles.css" rel="stylesheet" />
         <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
+		<script src="https://code.s4d.io/widget-space/production/bundle.js"></script>
+    	<link rel="stylesheet" href="https://code.s4d.io/widget-space/production/main.css">
+
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <a class="navbar-brand" href="index.html">Welcome Admin</a>
+            <a class="navbar-brand" href="index.html">Welcome Staff</a>
             <!-- Navbar Search-->
             <div class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
-                <a href = "">Logout</a>
+                 <a href = "{{ url_for('logout') }}">Logout</a>
             </div>
             <!-- Navbar-->
         </nav>
-		
-		<script
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid">
+						<br>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item active">Staff</li>
+                        </ol>
+						
+						
+						<script
 src="https://code.jquery.com/jquery-3.5.1.min.js"
 integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
 crossorigin="anonymous">
 </script>
 	
-<script>
-	
-	var room = "NONE";
-	var room_tit = "";
-	
-	function load_messages(){
-		if(room != "NONE") {
-			open_room(room, room_tit);
-		}
-    	setTimeout(load_messages, 500);
-	}
-	
-	load_messages();
-	  
-	function sendMessage(room_id) {
-		var msg = document.getElementById("sendtext").value;
+
+
+
+						<div class="row">
+						<table>
+						{% for class in orgs %}
+						<tr>
+							<td><h3>{{class[1]}}</h3></td>
+							<td>
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-area mr-1"></i>
+                                        Class Room
+                                    </div>
+                                    <div class="card-body">
+									<script>
+									function toggleStaff(classid, room) {
+									  var widgetEl = document.getElementById(classid);
+									  // Init a new widget
+									  webex.widget(widgetEl).spaceWidget({
+										accessToken: '{{access_token}}',
+										destinationId: room,
+										destinationType: 'spaceId'
+									  });
+										
+									}
+									</script>
+									<button type="button" onclick = "toggleStaff('staff-{{class[0]}}', '{{class[2]}}')" class="btn btn-primary" data-toggle="modal" data-target="#staffmodal-{{class[0]}}">
+  										Open
+									</button>
+										
+										
+
+									<div class="modal fade" id="staffmodal-{{class[0]}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									  <div class="modal-dialog modal-dialog-centered" role="document">
+										<div class="modal-content">
+										  <div class="modal-header">
+											<h5 class="modal-title" id="exampleModalCenterTitle">Class Room</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											  <span aria-hidden="true">&times;</span>
+											</button>
+										  </div>
+										  <div class="modal-body">
+
+
+											  <div id="staff-{{class[0]}}" style="height: 500px;"/>
+
+
+										  </div>
+										  <div class="modal-footer">
+											<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+											<button type="button" class="btn btn-primary">Save changes</button>
+										  </div>
+										</div>
+									  </div>
+									</div>
+									
+									</div>
+                                </div>
+							</td>
+                            							
+							
+							
+							<td>
+							<div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-area mr-1"></i>
+                                        Student Rooms
+                                    </div>
+                                    <div class="card-body">
+									<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#studentsmodal-{{class[0]}}">
+  										Open
+									</button>
+										
+										
+
+									<div class="modal fade" id="studentsmodal-{{class[0]}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									  <div class="modal-dialog modal-dialog-centered" role="document">
+										<div class="modal-content">
+										  <div class="modal-header">
+											<h5 class="modal-title" id="exampleModalCenterTitle">Class Room</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											  <span aria-hidden="true">&times;</span>
+											</button>
+										  </div>
+										  <div class="modal-body">
+											  <table>
+											  {% for student in class[4] %}
+											  <tr>
+												  <td>{{student[1]}}</td>
+												  <td>
+												  
+												  	
+									<script>				  
+									function toggleStudent(classid, room, original) {
+										
+									  
+									  
+									  var widgetEl = document.getElementById(classid);
+									  // Init a new widget
+									  webex.widget(widgetEl).spaceWidget({
+										accessToken: '{{access_token}}',
+										destinationId: room,
+										destinationType: 'spaceId'
+									  });
+										
+									}
+									</script>
+									<button type="button" onclick = "toggleStudent('students-{{class[0]}}-{{student[0]}}', '{{student[0]}}', '#studentsmodal-{{class[0]}}')" class="btn btn-primary" data-toggle="modal" data-target="#studentsmodal-{{class[0]}}-{{student[0]}}">
+  										Open
+									</button>				  
+									<div class="modal fade" id="studentsmodal-{{class[0]}}-{{student[0]}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									  <div class="modal-dialog modal-dialog-centered" role="document">
+										<div class="modal-content">
+										  <div class="modal-header">
+											<h5 class="modal-title" id="exampleModalCenterTitle">Class Room</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											  <span aria-hidden="true">&times;</span>
+											</button>
+										  </div>
+										  <div class="modal-body">
+											  
+											  <div id="students-{{class[0]}}-{{student[0]}}" style=" height: 500px;"/>
+
+										  </div>
+										  <div class="modal-footer">
+											<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+											<button type="button" class="btn btn-primary">Save changes</button>
+										  </div>
+										</div>
+									  </div>
+									</div>			  
+													  
+													  
+													  
+													  
+													  
+													  
+													  
+													  
+												  </td>
+												  
+											  </tr>
+											  {% endfor %}
+											  </table>
+
+										  </div>
+										  <div class="modal-footer">
+											<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+											<button type="button" class="btn btn-primary">Save changes</button>
+										  </div>
+										</div>
+									  </div>
+									</div>
+									
+									</div>
+                                </div>
+                            </td>
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+						<tr>
+						{% endfor %}
+						</table>
+						</div>
+                    </div>
+                </main>
+		</div>
+		
+		<script>
+function sendMessage(room_id, dome) {
+		var msg = document.getElementById(dome).value;
 		$.post("/api/send_message",
 		  {
 			room_id : room_id,
@@ -54,22 +232,15 @@ crossorigin="anonymous">
 			console.log(status);
 		});
 	} 
-	
-	function send_msg_button(room_id) {
+			
+			function send_msg_button(room_id) {
 		var onclick = 'sendMessage("' + room_id + '")';
 		var str = "<button onclick = '" + onclick + "'>Send Message</button>";
 		console.log(str);
 		return str;
 	}
 	
-	function open_room(room_id, room_title) {
-		room = room_id;
-		room_tit = room_title;
-		document.getElementById("convesationname").innerHTML = room_title;
-		console.log(room);
-		console.log(room_tit);
-		document.getElementById("convesationname") == room_title;
-		document.getElementById("sendmessagebutton").innerHTML = send_msg_button(room_id);
+	function open_room(room_id, domelm) {
 		$.post("/api/get_messages",
 		  {
 			room_id : room_id,
@@ -89,85 +260,21 @@ crossorigin="anonymous">
 			}
 			htmlstr = htmlstr + "</table>";
 			console.log(htmlstr);
-			document.getElementById("viewmessages").innerHTML = htmlstr;
+			document.getElementById(domelm).innerHTML = htmlstr;
 		});
 	}
 	
-	function open_wrapper(room_id, title) {
-		open_room(room_id, title);
-		window.location.href = "#convotop";
+	function load_staff(){
+		open_room('{{room_id}}', "staffmessages");
+    	setTimeout(load_staff, 500);
 	}
-</script>										<a id="convotop"></a>
-
-            <div id="layoutSidenav_content">
-                <main>
-                    <div class="container-fluid">
-						<br>
-                        <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Admin</li>
-                        </ol>
-                        <div class="row">
-                            <div class="col-xl-6">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <i class="fas fa-chart-area mr-1"></i>
-                                        <div id = "convesationname">Conversation</div>
-                                    </div>
-                                    <div class="card-body">
-										<div id = "viewmessages">
-										</div>
-										Message: <input type = "text" id = "sendtext"/><br>
-										<div id = "sendmessagebutton">
-										</div>
-									</div>
-                                </div>
-                            </div>
-                            <div class="col-xl-6">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <i class="fas fa-chart-bar mr-1"></i>
-                                        Console
-                                    </div>
-                                    <div class="card-body">{{message}}{{createresponse}}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-table mr-1"></i>
-                                Organizations
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                <th>Conversation</th>
-                                            </tr>
-                                        </thead>
-                                        <tfoot>
-                                            <tr>
-                                                <th>Conversation</th>
-                                            </tr>
-                                        </tfoot>
-                                        <tbody>
-                                            {% for room in rooms %}
-											<tr>
-
-											<td>
-											<button onclick = "open_wrapper('{{room[0]}}', '{{room[1]}}')">{{room[1]}}</button>
-											</td>
-
-											</tr>
-										{% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </main>
-		</div>
+	function load_forum(){
+		open_room('{{lobby_id}}', "forummessages");
+    	setTimeout(load_forum, 500);
+	}
+//   load_staff();
+//   load_forum();
+		</script>
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid">
                         <div class="d-flex align-items-center justify-content-between small">

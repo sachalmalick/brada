@@ -12,10 +12,13 @@
         <link href="css/styles.css" rel="stylesheet" />
         <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
+		<script src="https://code.s4d.io/widget-space/production/bundle.js"></script>
+    	<link rel="stylesheet" href="https://code.s4d.io/widget-space/production/main.css">
+
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <a class="navbar-brand" href="index.html">Welcome Admin</a>
+            <a class="navbar-brand" href="index.html">Welcome Student</a>
             <!-- Navbar Search-->
             <div class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
                  <a href = "{{ url_for('logout') }}">Logout</a>
@@ -27,7 +30,7 @@
                     <div class="container-fluid">
 						<br>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Admin</li>
+                            <li class="breadcrumb-item active">Student</li>
                         </ol>
 						
 						
@@ -37,52 +40,122 @@ integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
 crossorigin="anonymous">
 </script>
 	
-<script>
-	
-	
-	
 
-</script>
 
-						
-						
-						
-                        <div class="row">
-                            <div class="col-xl-6">
+
+						<div class="row">
+						<table>
+						{% for class in orgs %}
+						<tr>
+							<td><h3>{{class[1]}}</h3></td>
+							<td>
                                 <div class="card mb-4">
                                     <div class="card-header">
                                         <i class="fas fa-chart-area mr-1"></i>
                                         Staff Room
                                     </div>
                                     <div class="card-body">
-										<div id = "staffmessages">
-										</div>
-										Message: <input type = "text" id = "stafftext" name = "orgname"/><br>
+									<script>
+									function toggleStaff(classid, room) {
+									  var widgetEl = document.getElementById(classid);
+									  // Init a new widget
+									  webex.widget(widgetEl).spaceWidget({
+										accessToken: '{{access_token}}',
+										destinationId: room,
+										destinationType: 'spaceId'
+									  });
 										
-										<button onclick = "sendMessage('{{room_id}}', 'stafftext')">Send</button>
+									}
+									</script>
+									<button type="button" onclick = "toggleStaff('staff-{{class[0]}}', '{{class[2]}}')" class="btn btn-primary" data-toggle="modal" data-target="#staffmodal-{{class[0]}}">
+  										Open
+									</button>
+										
+										
 
+									<div class="modal fade" id="staffmodal-{{class[0]}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									  <div class="modal-dialog modal-dialog-centered" role="document">
+										<div class="modal-content">
+										  <div class="modal-header">
+											<h5 class="modal-title" id="exampleModalCenterTitle">Staff Room</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											  <span aria-hidden="true">&times;</span>
+											</button>
+										  </div>
+										  <div class="modal-body">
+
+
+											  <div id="staff-{{class[0]}}" style="height: 500px;"/>
+
+
+										  </div>
+										  <div class="modal-footer">
+											<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+											<button type="button" class="btn btn-primary">Save changes</button>
+										  </div>
+										</div>
+									  </div>
+									</div>
+									
 									</div>
                                 </div>
-                            </div>
-                            <div class="col-xl-6">
+							</td>
+                            <td>
                                 <div class="card mb-4">
                                     <div class="card-header">
                                         <i class="fas fa-chart-area mr-1"></i>
-                                        Class Forum
+                                        Class Room
                                     </div>
                                     <div class="card-body">
-										<div id = "forummessages">
-										</div>
-										Message: <input type = "text" id = "classtext" name = "username"/><br>
+									<script>
+									function toggleClass(classid, room) {
+									  var widgetEl = document.getElementById(classid);
+									  // Init a new widget
+									  webex.widget(widgetEl).spaceWidget({
+										accessToken: '{{access_token}}',
+										destinationId: room,
+										destinationType: 'spaceId'
+									  });
+										
+									}
+									</script>
+									<button type="button" onclick = "toggleClass('class-{{class[0]}}', '{{class[3]}}')" class="btn btn-primary" data-toggle="modal" data-target="#classmodal-{{class[0]}}">
+  										Open
+									</button>
+										
+										
 
-										
-										<button onclick = "sendMessage('{{lobby_id}}' ,'classtext')">Send</button>
-										
-										
+									<div class="modal fade" id="classmodal-{{class[0]}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									  <div class="modal-dialog modal-dialog-centered" role="document">
+										<div class="modal-content">
+										  <div class="modal-header">
+											<h5 class="modal-title" id="exampleModalCenterTitle">Class Room</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											  <span aria-hidden="true">&times;</span>
+											</button>
+										  </div>
+										  <div class="modal-body">
+
+
+											  <div id="class-{{class[0]}}" style=" height: 500px;"/>
+
+
+										  </div>
+										  <div class="modal-footer">
+											<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+											<button type="button" class="btn btn-primary">Save changes</button>
+										  </div>
+										</div>
+									  </div>
+									</div>
+									
 									</div>
                                 </div>
-                            </div>
-                        </div>
+                            </td>
+						<tr>
+						{% endfor %}
+						</table>
+						</div>
                     </div>
                 </main>
 		</div>
@@ -139,8 +212,8 @@ function sendMessage(room_id, dome) {
 		open_room('{{lobby_id}}', "forummessages");
     	setTimeout(load_forum, 500);
 	}
-   load_staff();
-   load_forum();
+//   load_staff();
+//   load_forum();
 		</script>
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid">

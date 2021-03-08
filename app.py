@@ -23,6 +23,11 @@ def logout():
 	session["webex_brada_persondetails"] = None
 	return render_template("index.html")
 
+@app.route('/embeddemo', methods=['GET'])
+def embded_route():
+	access_token = session["webex_brada_accesstoken"].get("access_token")
+	space_id = "Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL1JPT00vMzA1ZWVlYjAtN2M1ZS0xMWViLWJjMTMtZGYxYjJjNDhmOGNj"
+	return render_template("widgetdemo.html", access_token=access_token, space_id=space_id)
 
 @app.route('/admin', methods=['GET'])
 def admin():
@@ -58,21 +63,26 @@ def staff():
 	if(session["webex_brada_userdata"] == False):
 		return render_template("home.html", message="unrecognized staff")
 	print(session["webex_brada_userdata"])
-	organization = db.get_organization(org_id=session["webex_brada_userdata"]["org_id"])
-	print(organization)
-	if(len(organization) == 0):
-		print("no org")
-		return render_template("staff.html", data=session["webex_brada_userdata"],rooms=[])
-	team_id = organization[0][4]
-	if(team_id == ""):
-		print("no team id")
-		return render_template("staff.html", data=session["webex_brada_userdata"],rooms=[])
-	wc = wu.WebexConnector(session["webex_brada_accesstoken"].get("access_token"))
-	print(team_id)
-	rooms = wc.get_all_rooms(team_id)
-	rooms = [(room["id"], room["title"]) for room in rooms]
-	print(rooms)
-	return render_template("staff.html", data=session["webex_brada_userdata"], rooms=rooms)
+	all_orgs = []
+	for org in session["webex_brada_userdata"]:
+		org_id = org["org_id"]
+		organization = db.get_organization(org_id=org_id)
+		print(organization)
+		if(len(organization) == 0):
+			print("no org")
+			continue
+		team_id = organization[0][4]
+		orgname = organization[0][1]
+		lobby = organization[0][5]
+		if(team_id == ""):
+			print("no team id")
+			continue
+		wc = wu.WebexConnector(session["webex_brada_accesstoken"].get("access_token"))
+		rooms = wc.get_all_rooms(team_id)
+		rooms = [(room["id"], room["title"]) for room in rooms]
+		all_orgs.append((org_id,orgname,lobby,team_id, rooms))
+	access_token = session["webex_brada_accesstoken"].get("access_token")
+	return render_template("staff.html", data=session["webex_brada_userdata"], orgs=all_orgs, access_token=access_token)
 
 @app.route('/student', methods=['GET'])
 def student():
@@ -84,15 +94,20 @@ def student():
 	session["webex_brada_userdata"] = db.get_student(email=email)
 	if(session["webex_brada_userdata"] == False):
 		return render_template("home.html", message="unrecognized student")
-	room_id = session["webex_brada_userdata"].get("staff_room")
-	org_id = session["webex_brada_userdata"].get("org_id")
-	organization = db.get_organization(org_id=session["webex_brada_userdata"]["org_id"])
-	print(organization)
-	if(len(organization) == 0):
-		print("no org")
-		return render_template("student.html", data=session["webex_brada_userdata"],room_id=room_id)
-	lobby_id = organization[0][5]
-	return render_template("student.html", data=session["webex_brada_userdata"], room_id=room_id, lobby_id=lobby_id)
+	all_orgs = []
+	for studentorg in session["webex_brada_userdata"]:
+		room_id = studentorg.get("staff_room")
+		org_id = studentorg.get("org_id")
+		organization = db.get_organization(org_id=studentorg["org_id"])
+		if(len(organization) == 0):
+			print("no org")
+			continue
+		lobby_id = organization[0][5]
+		org_name = organization[0][1]
+		all_orgs.append((org_id, org_name, room_id, lobby_id))
+	print(all_orgs)
+	access_token = session["webex_brada_accesstoken"].get("access_token")
+	return render_template("student.html", orgs=all_orgs, access_token = access_token)
 
 @app.route('/forms/admin/login', methods=['POST'])
 def admin_login():
@@ -127,6 +142,8 @@ def upload_students():
 	access_token = session["webex_brada_accesstoken"].get("access_token")
 	wc = wu.WebexConnector(access_token)
 	students = pu.read_file("data/" + file.filename)
+	for student in students:
+		student["org_id"] = org_id
 	staff = db.get_all_staff(org_id)
 	wc.students = students
 	wc.staff = staff
@@ -154,6 +171,8 @@ def upload_staff():
 	access_token = session["webex_brada_accesstoken"].get("access_token")
 	wc = wu.WebexConnector(access_token)
 	staff = pu.read_file("data/" + file.filename)
+	for member in staff:
+		member["org_id"] = org_id
 	students = db.get_all_students(org_id)
 	wc.students = students
 	wc.staff = staff

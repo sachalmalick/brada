@@ -1,0 +1,25 @@
+1. need to change the get students, and get staff to include the org id, otherwise it will default to first instance of the row. (30 min)
+
+2. need to do a video walk through of the current setup. (30 minutes)
+
+3. need to replace the current polling chat with the integration. (1 hr)
+
+4. need to do a shit ton of testing. (2 hours)
+
+5. need to deploy to aws (1 hr)
+
+6. need to do a presentation. (2 hours)
+
+7. need to do a demo (2 hours)
+
+(walk henry from 10-1)
+eat breakfast from 1-2.
+homework (2 hours) = 12 hours of work to do tomorrow.
+
+
+
+UI Plan:
+
+Student: Each class has a button that opens the staff room and class forum for it that allows u to open and close it.
+
+Staff: Each class 
